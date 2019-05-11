@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">PratilipiContacts</string>
+    <string name="gender">Gender</string>
+    <string name="email">Email</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="pratilipi_conatct">Pratilipi Conatct</string>
 </resources>
