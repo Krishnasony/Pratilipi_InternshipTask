@@ -4,11 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.databinding.DataBindingUtil
 import android.net.Uri
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
-import com.squareup.picasso.Picasso
 import i.krishnasony.pratilipicontacts.R
 import i.krishnasony.pratilipicontacts.databinding.ActivityContactDetailBinding
 import i.krishnasony.pratilipicontacts.db.ContactModel
@@ -26,6 +27,7 @@ class ContactDetailActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        dataBinding = DataBindingUtil.setContentView(this,R.layout.activity_contact_detail)
@@ -35,12 +37,14 @@ class ContactDetailActivity : AppCompatActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun handleIntentData() {
         intent?.let {
             setDataToDisplay(intent.getSerializableExtra(CONTACT_KEY) as ContactModel)
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setDataToDisplay(contact: ContactModel) {
         dataBinding.mobile.text =   contact.phone
         dataBinding.userName.text = contact.name
@@ -52,7 +56,14 @@ class ContactDetailActivity : AppCompatActivity() {
        }
         contact.photo?.let {
             val uri = Uri.parse(contact.photo)
+            dataBinding.view.setBackgroundColor(generator.randomColor)
             dataBinding.circleImageView.setImageURI(uri)
+            if (dataBinding.circleImageView.drawable!=null){
+                dataBinding.circleImageView.setImageURI(uri)
+            }else{
+                dataBinding.circleImageView.setImageDrawable(getDrawable(R.drawable.user))
+
+            }
         } ?: run{
             setAvatar(contact.name!!)
         }

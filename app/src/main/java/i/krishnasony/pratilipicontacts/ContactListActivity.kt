@@ -13,6 +13,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.widget.Toast
 import i.krishnasony.pratilipicontacts.databinding.ActivityContactListBinding
 import i.krishnasony.pratilipicontacts.db.ContactModel
@@ -42,6 +43,8 @@ class ContactListActivity : AppCompatActivity() {
     }
 
     private fun getContactList() {
+        dataBinding.progressbar.visibility = View.VISIBLE
+        dataBinding.contactRecyclerView.visibility = View.GONE
         val users:MutableList<ContactModel>? = mutableListOf()
         val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
         while (cursor.moveToNext()) {
@@ -57,26 +60,29 @@ class ContactListActivity : AppCompatActivity() {
             if (cur1.moveToNext()) {
                  email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
             }
-
-
             users!!.add(ContactModel(name.toString(),phonenumber.toString(),photo.toString(),email.toString()))
-
         }
         cursor.close()
+        dataBinding.swipeRefreshContacts.isRefreshing = false
+        dataBinding.contactRecyclerView.visibility = View.VISIBLE
+        dataBinding.progressbar.visibility = View.GONE
         dataBinding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
         dataBinding.contactRecyclerView.adapter = ContactListAdapter(users!!.sortedBy { it.name })
 
     }
     fun openDisplayPhoto(contactId: Long): Uri? {
         val contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, contactId)
-        val displayPhotoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO)
+        var displayPhotoUri:Uri?=null
+        if (contactUri!=null){
+            displayPhotoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.DISPLAY_PHOTO)
+        }
        return displayPhotoUri
 
     }
     private fun setRefreshSwipeListener(){
         dataBinding.swipeRefreshContacts.setOnRefreshListener {
+            dataBinding.swipeRefreshContacts.isRefreshing = true
             getContactList()
-            dataBinding.swipeRefreshContacts.isRefreshing = false
         }
     }
 
@@ -85,33 +91,6 @@ class ContactListActivity : AppCompatActivity() {
         setRefreshSwipeListener()
     }
 
-//    fun getNameEmailDetails(): ArrayList<String> {
-//        val names = ArrayList<String>()
-//        val cr = contentResolver
-//        val cur = cr.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null)
-//        if (cur!!.count > 0) {
-//            while (cur.moveToNext()) {
-//                val id = cur.getString(cur.getColumnIndex(ContactsContract.Contacts._ID))
-//                val cur1 = cr.query(
-//                    ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
-//                    ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
-//                    arrayOf(id), null
-//                )
-//                while (cur1!!.moveToNext()) {
-//                    //to get the contact names
-//                    val name = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-//                    Log.e("Name :", name)
-//                    val email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
-//                    Log.e("Email", email)
-//                    if (email != null) {
-//                        names.add(name)
-//                    }
-//                }
-//                cur1.close()
-//            }
-//        }
-//        return names
-//    }
     private fun getInternetPermissions() {
 
         if (ContextCompat.checkSelfPermission(
