@@ -18,4 +18,7 @@
     <color name="md_orange_400">#FFA726</color>
     <color name="md_grey_400">#BDBDBD</color>
     <color name="md_blue_grey_400">#78909C</color>
+    <color name="color_pratilipi">#AD1457</color>
+    <color name="status_color_pratilipi">#880E4F</color>
+
 </resources>

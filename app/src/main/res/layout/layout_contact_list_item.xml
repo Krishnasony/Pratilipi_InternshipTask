@@ -5,6 +5,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:background="@color/white"
+        android:id="@+id/itemview"
         android:layout_height="wrap_content">
 
     <TextView
@@ -16,7 +17,7 @@
             android:gravity="center"
             android:textSize="20sp"
             android:textStyle="bold"
-            tools:text="KS"
+            android:text="KS"
             android:letterSpacing="0.1"
             android:layout_marginTop="16dp"
             app:layout_constraintTop_toTopOf="parent"

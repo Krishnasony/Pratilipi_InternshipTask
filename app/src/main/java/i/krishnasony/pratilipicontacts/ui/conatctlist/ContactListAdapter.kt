@@ -1,14 +1,18 @@
 package i.krishnasony.pratilipicontacts.ui.conatctlist
 
+import android.net.Uri
 import android.os.Build
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.squareup.picasso.Picasso
 import i.krishnasony.pratilipicontacts.R
 import i.krishnasony.pratilipicontacts.Utils
 import i.krishnasony.pratilipicontacts.db.ContactModel
+import i.krishnasony.pratilipicontacts.ui.contactdeatail.ContactDetailActivity
 import kotlinx.android.synthetic.main.layout_contact_list_item.view.*
+
 
 class ContactListAdapter(var contactList:List<ContactModel>): RecyclerView.Adapter<ContactListAdapter.ContactListViewHolder>() {
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): ContactListViewHolder {
@@ -25,15 +29,19 @@ class ContactListAdapter(var contactList:List<ContactModel>): RecyclerView.Adapt
 
 
     inner  class ContactListViewHolder(var view : View) : RecyclerView.ViewHolder(view) {
+
+//        private var generator = ColorGenerator.MATERIAL
         fun bind(contact:ContactModel) {
             view.tv_name.text = contact.name
             view.tv_phone_number.text = contact.phone
-            setIcon(contact.name)
-            onClicks(contact)
+            setIcon(contact.name!!)
+            view.itemview.setOnClickListener {
+                            onClicks(contact)
+            }
         }
 
         private fun onClicks(contact: ContactModel) {
-//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            ContactDetailActivity.start(view.context,contact)
         }
 
         private fun setIcon(name: String) {
@@ -45,6 +53,7 @@ class ContactListAdapter(var contactList:List<ContactModel>): RecyclerView.Adapt
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 view.name_icon.backgroundTintList =  Utils.getMaterialColor(view.context)
-            }        }
+            }
+        }
     }
 }
