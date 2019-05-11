@@ -7,6 +7,6 @@ class ContactListActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.contact_list)
+        setContentView(R.layout.activity_contact_list)
     }
 }
