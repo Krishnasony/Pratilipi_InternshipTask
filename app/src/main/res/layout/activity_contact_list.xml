@@ -3,37 +3,44 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        tools:context=".ContactListActivity" android:id="@+id/layout">
+        >
+
     <android.support.v4.widget.SwipeRefreshLayout
             android:id="@+id/swipe_refresh_contacts"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            tools:context=".ContactListActivity">
 
         <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-            <TextView
-                    android:id="@+id/Toolbar"
-                    android:layout_width="match_parent"
-                    android:layout_height="47dp"
-                    android:background="@color/white"
-                    android:text="@string/pratilipi_conatct"
+            <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
                     android:textAlignment="center"
-                    android:gravity="center_horizontal|center"
-                    android:textColor="#000"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:gravity="center"
+                    android:background="@color/white"
+                    android:minHeight="?attr/actionBarSize"
+                    android:theme="?attr/actionBarTheme"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent">
+
+            </android.support.v7.widget.Toolbar>
+
 
             <android.support.v7.widget.RecyclerView
                     android:id="@+id/contact_recyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    app:layout_constraintTop_toBottomOf="@id/Toolbar"
+                    android:layout_height="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent">
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintHorizontal_bias="1.0"
+                    app:layout_constraintVertical_bias="1.0"
+                    app:layout_constraintTop_toBottomOf="@+id/toolbar">
 
             </android.support.v7.widget.RecyclerView>
 

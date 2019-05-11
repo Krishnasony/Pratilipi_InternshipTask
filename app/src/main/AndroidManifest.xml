@@ -14,7 +14,7 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.ContactDetailActivity">
+        <activity android:name=".ui.contactdeatail.ContactDetailActivity">
         </activity>
         <activity android:name=".ContactListActivity">
             <intent-filter>

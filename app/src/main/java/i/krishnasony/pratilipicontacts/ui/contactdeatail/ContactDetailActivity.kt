@@ -1,4 +1,4 @@
-package i.krishnasony.pratilipicontacts.ui
+package i.krishnasony.pratilipicontacts.ui.contactdeatail
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
