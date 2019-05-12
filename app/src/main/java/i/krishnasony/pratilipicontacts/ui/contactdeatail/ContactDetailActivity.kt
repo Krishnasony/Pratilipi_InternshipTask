@@ -1,13 +1,17 @@
 package i.krishnasony.pratilipicontacts.ui.contactdeatail
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.databinding.DataBindingUtil
 import android.net.Uri
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.support.annotation.RequiresApi
+import android.support.v4.content.ContextCompat
+import android.widget.Toast
 import com.amulyakhare.textdrawable.TextDrawable
 import com.amulyakhare.textdrawable.util.ColorGenerator
 import i.krishnasony.pratilipicontacts.R
@@ -31,6 +35,7 @@ class ContactDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
        dataBinding = DataBindingUtil.setContentView(this,R.layout.activity_contact_detail)
+        statusBarColor(this)
         handleIntentData()
         dataBinding.backButton.setOnClickListener {
             onBackPressed()
@@ -47,8 +52,15 @@ class ContactDetailActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
     private fun setDataToDisplay(contact: ContactModel) {
         dataBinding.mobile.text =   contact.phone
+        dataBinding.call.setOnClickListener {
+            makeCall(contact)
+        }
+        dataBinding.imageButton.setOnClickListener {
+            makeCall(contact)
+        }
+
         dataBinding.userName.text = contact.name
-       if (contact.email!=null){
+       if (contact.email!="null"){
            dataBinding.email.text = contact.email
        }else{
            dataBinding.email.text = getString(R.string.email_not_available)
@@ -66,6 +78,30 @@ class ContactDetailActivity : AppCompatActivity() {
             }
         } ?: run{
             setAvatar(contact.name!!)
+        }
+    }
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+    private fun statusBarColor(contactDetailActivity: ContactDetailActivity) {
+        val window = contactDetailActivity.window
+        window.statusBarColor = ContextCompat.getColor(this,R.color.black)
+
+    }
+
+    private  fun makeCall(contact: ContactModel){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CALL_PHONE)
+            != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted
+            // No explanation needed, we can request the permission.
+            Toast.makeText(this,"Permission not available",Toast.LENGTH_LONG).show()
+
+
+        }else{
+            val intent =Intent(Intent.ACTION_CALL)
+            intent.setData(Uri.parse("tel:" +contact.phone))
+            startActivity(intent)
+
+
         }
     }
     private fun setAvatar(name:String) {

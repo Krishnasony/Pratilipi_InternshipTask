@@ -49,7 +49,7 @@ class ContactListActivity : AppCompatActivity() {
             dataBinding.progressbar.visibility = View.VISIBLE
             dataBinding.contactRecyclerView.visibility = View.GONE
                 ActivityCompat.requestPermissions(this,
-                    arrayOf(Manifest.permission.READ_CONTACTS),
+                    arrayOf(Manifest.permission.READ_CONTACTS,Manifest.permission.CALL_PHONE),
                     MY_PERMISSIONS_REQUEST_READ_CONTACTS
                 )
 
@@ -116,7 +116,7 @@ class ContactListActivity : AppCompatActivity() {
         when (requestCode) {
             MY_PERMISSIONS_REQUEST_READ_CONTACTS -> {
                 // If request is cancelled, the result arrays are empty.
-                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)||(grantResults.isNotEmpty() && grantResults[1] == PackageManager.PERMISSION_GRANTED)) {
                     // permission was granted, yay!
                     getContactList()
                 } else {
@@ -152,5 +152,7 @@ class ContactListActivity : AppCompatActivity() {
 
     companion object {
         private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS =103
+        private const val MAKE_PHONE_CALL =104
+
     }
 }
