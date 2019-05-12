@@ -27,47 +27,60 @@ class ContactListActivity : AppCompatActivity() {
     private var phonenumber: String? = null
     private var photo:String?=null
     private var email:String?=null
-    val INTERNETCODE = 101
-    val CONTACTCODE = 102
 
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         dataBinding = DataBindingUtil.setContentView(this,R.layout.activity_contact_list)
         init()
-        getInternetPermissions()
-        enableRuntimePermissionForContacts()
         setRefreshSwipeListener()
         getContactList()
 
     }
 
     private fun getContactList() {
-        dataBinding.progressbar.visibility = View.VISIBLE
-        dataBinding.contactRecyclerView.visibility = View.GONE
-        val users:MutableList<ContactModel>? = mutableListOf()
-        val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
-        while (cursor.moveToNext()) {
-            name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
-            phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
-            photo = openDisplayPhoto(cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))).toString()
-            val id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
+        // Here, thisActivity is the current activity
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED) {
+
+                // Permission is not granted
+                // No explanation needed, we can request the permission.
+            dataBinding.progressbar.visibility = View.VISIBLE
+            dataBinding.contactRecyclerView.visibility = View.GONE
+                ActivityCompat.requestPermissions(this,
+                    arrayOf(Manifest.permission.READ_CONTACTS),
+                    MY_PERMISSIONS_REQUEST_READ_CONTACTS
+                )
+
+
+        } else {
+            dataBinding.progressbar.visibility = View.VISIBLE
+            dataBinding.contactRecyclerView.visibility = View.GONE
+            val users:MutableList<ContactModel>? = mutableListOf()
+            val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+            while (cursor.moveToNext()) {
+                name = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME))
+                phonenumber = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                photo = openDisplayPhoto(cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))).toString()
+                val id = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID))
                 val cur1 = contentResolver.query(
                     ContactsContract.CommonDataKinds.Email.CONTENT_URI, null,
                     ContactsContract.CommonDataKinds.Email.CONTACT_ID + " = ?",
                     arrayOf(id), null
                 )
-            if (cur1.moveToNext()) {
-                 email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+                if (cur1.moveToNext()) {
+                    email = cur1.getString(cur1.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA))
+                }
+                users!!.add(ContactModel(name.toString(),phonenumber.toString(),photo.toString(),email.toString()))
             }
-            users!!.add(ContactModel(name.toString(),phonenumber.toString(),photo.toString(),email.toString()))
+            cursor.close()
+            dataBinding.swipeRefreshContacts.isRefreshing = false
+            dataBinding.contactRecyclerView.visibility = View.VISIBLE
+            dataBinding.progressbar.visibility = View.GONE
+            dataBinding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
+            dataBinding.contactRecyclerView.adapter = ContactListAdapter(users!!.sortedBy { it.name })
         }
-        cursor.close()
-        dataBinding.swipeRefreshContacts.isRefreshing = false
-        dataBinding.contactRecyclerView.visibility = View.VISIBLE
-        dataBinding.progressbar.visibility = View.GONE
-        dataBinding.contactRecyclerView.layoutManager = LinearLayoutManager(this)
-        dataBinding.contactRecyclerView.adapter = ContactListAdapter(users!!.sortedBy { it.name })
 
     }
     fun openDisplayPhoto(contactId: Long): Uri? {
@@ -91,66 +104,38 @@ class ContactListActivity : AppCompatActivity() {
         setRefreshSwipeListener()
     }
 
-    private fun getInternetPermissions() {
-
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.INTERNET
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.INTERNET), INTERNETCODE)
-        }
-
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     private fun statusBarColor(contactListActivity: ContactListActivity) {
         val window = contactListActivity.window
         window.statusBarColor = ContextCompat.getColor(this,R.color.status_color_pratilipi)
 
     }
-    fun enableRuntimePermissionForContacts() {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                this,
-                Manifest.permission.READ_CONTACTS
-            )
-        ) {
-
-            Toast.makeText(this, "Permission Granted", Toast.LENGTH_LONG).show()
-        } else {
-
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(
-                    Manifest.permission.READ_CONTACTS,
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ),
-                CONTACTCODE
-            )
-
-        }
-    }
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
+    override fun onRequestPermissionsResult(requestCode: Int,
+                                            permissions: Array<String>, grantResults: IntArray) {
         when (requestCode) {
+            MY_PERMISSIONS_REQUEST_READ_CONTACTS -> {
+                // If request is cancelled, the result arrays are empty.
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    // permission was granted, yay!
+                    getContactList()
+                } else {
+                    // permission denied, boo!
+                    Toast.makeText(this,"Permission Denied please try Again",Toast.LENGTH_LONG).show()
+                    dataBinding.swipeRefreshContacts.isRefreshing = false
+                    dataBinding.contactRecyclerView.visibility = View.VISIBLE
+                    dataBinding.progressbar.visibility = View.GONE
 
-            INTERNETCODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permisson Granted", Toast.LENGTH_SHORT).show()
+                }
+                return
             }
 
-            CONTACTCODE -> if (grantResults.size > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "Permisson Granted", Toast.LENGTH_SHORT).show()
-            }
-
+            // Add other 'when' lines to check for other
+            // permissions this app might request.
             else -> {
+                // Ignore all other requests.
             }
         }
-
-
     }
 
     @RequiresApi(Build.VERSION_CODES.M)
@@ -163,5 +148,9 @@ class ContactListActivity : AppCompatActivity() {
         dataBinding.toolbar.title= "Pratilipi Contact"
         dataBinding.toolbar.setTitleTextColor(ContextCompat.getColor(this,R.color.black))
         setSupportActionBar(dataBinding.toolbar)
+    }
+
+    companion object {
+        private const val MY_PERMISSIONS_REQUEST_READ_CONTACTS =103
     }
 }
