@@ -16,9 +16,11 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".ui.contactdeatail.ContactDetailActivity">
+        <activity android:name=".ui.contactdeatail.ContactDetailActivity"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ContactListActivity">
+        <activity android:name=".ContactListActivity"
+                android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
