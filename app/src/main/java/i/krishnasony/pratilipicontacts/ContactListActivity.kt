@@ -142,6 +142,7 @@ class ContactListActivity : AppCompatActivity() {
     private fun init() {
         statusBarColor(this)
         setToolbar()
+
     }
 
     private fun setToolbar() {
